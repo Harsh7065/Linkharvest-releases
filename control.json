@@ -1,6 +1,6 @@
 {
-  "active": false,
+  "active": true,
   "min_version": "1.4.3",
-  "allowed_hwids": [],
+  "allowed_hwids": ["*"],
   "message": "A required update (v1.4.3+) is available. Please download the latest version from GitHub Releases."
 }
