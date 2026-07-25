@@ -1,26 +1,5 @@
-"""
-remote_auth.py
-Optional remote "kill switch" / authorization gate. On startup, the app
-fetches a small JSON control file you control (e.g. a raw file in your
-GitHub repo) and decides whether to keep running.
-
-Control file format (host this wherever you like, e.g.
-https://raw.githubusercontent.com/<you>/<repo>/main/control.json):
-
-{
-  "active": true,
-  "min_version": "1.2.0",
-  "message": "This build has been retired. Please download the latest version."
-}
-
-- active: false           -> app shows `message` and exits immediately
-- min_version higher than the running version -> same (forces an update)
-- Any network/parse failure -> fails OPEN by default (app still runs).
-  Set FAIL_CLOSED = True below if you'd rather block on failure (e.g. for
-  paid/licensed software) instead of a free tool where you don't want a
-  flaky connection to lock out a legit user.
-"""
 import time
+import sys
 import requests
 
 CONTROL_URL = "https://raw.githubusercontent.com/Harsh7065/Linkharvest-releases/main/control.json"
@@ -45,22 +24,30 @@ def check_authorization(current_version: str):
     Call this once at startup, before the main window is built.
     """
     try:
-        # cache-busting: GitHub's raw-file CDN caches responses at the edge
-        # for several minutes, and different requests can even hit different
-        # cache nodes. Appending a changing query param forces a fresh fetch
-        # every time instead of risking a stale "active" value.
         bust = int(time.time())
         url = f"{CONTROL_URL}?_={bust}"
-        resp = requests.get(url, timeout=TIMEOUT, headers={"Cache-Control": "no-cache"})
+        
+        headers = {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0"
+        }
+        
+        resp = requests.get(url, timeout=TIMEOUT, headers=headers)
         if resp.status_code != 200:
             return (not FAIL_CLOSED, None)
 
         data = resp.json()
 
-        if data.get("active", True) is False:
+        # Flexible boolean check (handles both boolean False and string "false")
+        active_val = data.get("active", True)
+        if isinstance(active_val, str):
+            active_val = active_val.lower() not in ("false", "0", "no", "off")
+
+        if not bool(active_val):
             return (False, data.get("message", "This app is no longer available."))
 
-        min_version = data.get("min_version")
+        min_version = str(data.get("min_version", ""))
         if min_version and _parse_version(current_version) < _parse_version(min_version):
             return (False, data.get(
                 "message",
@@ -69,7 +56,5 @@ def check_authorization(current_version: str):
 
         return (True, None)
 
-    except requests.RequestException:
-        return (not FAIL_CLOSED, None)
-    except (ValueError, KeyError):
+    except (requests.RequestException, ValueError, KeyError):
         return (not FAIL_CLOSED, None)
