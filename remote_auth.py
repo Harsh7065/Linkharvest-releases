@@ -25,7 +25,7 @@ import requests
 
 CONTROL_URL = "https://raw.githubusercontent.com/Harsh7065/Linkharvest-releases/main/control.json"
 TIMEOUT = 5
-FAIL_CLOSED = False  # True = block the app if the check itself fails
+FAIL_CLOSED = True  # True = block the app if the check itself fails
 
 
 def _parse_version(v: str):
