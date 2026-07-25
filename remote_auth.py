@@ -8,7 +8,7 @@ Control file format (host this wherever you like, e.g.
 https://raw.githubusercontent.com/<you>/<repo>/main/control.json):
 
 {
-  "active": false,
+  "active": true,
   "min_version": "1.2.0",
   "message": "This build has been retired. Please download the latest version."
 }
