@@ -1,5 +1,5 @@
 {
-  "active": ture,
+  "active": true,
   "min_version": "1.4.8",
   "message": "A required update (v1.4.8+) is available. Please download the latest version from GitHub Releases."
 }
