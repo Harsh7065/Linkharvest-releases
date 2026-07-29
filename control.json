@@ -7,7 +7,7 @@ RELEASES_URL = "https://github.com/Harsh7065/Linkharvest-releases/releases/lates
 
 def check_remote_control(control_data: dict, current_version: str):
     active = control_data.get("active", True)
-    min_version = control_data.get("min_version", "v1.6.0")
+    min_version = control_data.get("min_version", "v1.6.1")
     message = control_data.get("message", "")
 
     # Kill switch check first
