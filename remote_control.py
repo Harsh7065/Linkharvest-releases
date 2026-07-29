@@ -4,11 +4,11 @@ import customtkinter as ctk
 from tkinter import messagebox
 
 DEFAULT_RELEASES_URL = "https://github.com/Harsh7065/Linkharvest-releases/releases/latest"
-APP_VERSION = "1.6.0"  # bump this on every release
+APP_VERSION = "v1.6.2"  # bump this on every release
 
 def check_remote_control(control_data: dict, current_version: str = APP_VERSION):
     active = control_data.get("active", True)
-    min_version = control_data.get("min_version", "1.6.0")
+    min_version = control_data.get("min_version", "v1.6.2")
     message = control_data.get("message", "")
     download_url = control_data.get("download_url", DEFAULT_RELEASES_URL)
 
